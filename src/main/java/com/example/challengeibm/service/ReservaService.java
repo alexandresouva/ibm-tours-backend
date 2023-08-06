@@ -4,8 +4,11 @@ import com.example.challengeibm.domain.Reserva;
 import com.example.challengeibm.dto.ReservaDto;
 import com.example.challengeibm.enums.Status;
 import com.example.challengeibm.repository.ReservaRepository;
+import com.example.challengeibm.service.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class ReservaService {
@@ -24,6 +27,12 @@ public class ReservaService {
         reservaDto = convertToDto(reserva);
         return reservaDto;
     }
+
+    public Reserva findById (Integer id) {
+        Optional<Reserva> obj = repository.findById(id);
+        return obj.orElseThrow(() -> new ObjectNotFoundException("Reservation not found, confirm the id."));
+    }
+
 
     private ReservaDto convertToDto (Reserva objDto) {
         return new ReservaDto(

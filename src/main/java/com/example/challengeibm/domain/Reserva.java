@@ -17,11 +17,7 @@ public class Reserva implements Serializable {
     private LocalDate dataInicio;
     private LocalDate dataFim;
     private Integer quantidadePessoas;
-
-    @Enumerated(EnumType.STRING)
     private Status status;
-
-
 
     //    Constructors
     public Reserva() {
@@ -34,8 +30,6 @@ public class Reserva implements Serializable {
         this.quantidadePessoas = quantidadePessoas;
         this.status = status;
     }
-
-
 
     //    Getters e setters
     public Integer getId() {

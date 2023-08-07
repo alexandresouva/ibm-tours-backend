@@ -8,6 +8,7 @@ import com.example.challengeibm.service.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,68 +19,67 @@ public class ReservaService {
     @Autowired
     private ReservaRepository repository;
 
-    public ReservaDto insert (ReservaDto reservaDto) {
-        reservaDto.setStatus(Status.CONFIRMADA);
+    public ReservaDto createReservation (ReservaDto reservation) {
+        validateReservationDates(reservation.getDataInicio(), reservation.getDataFim());
 
-        // Converto a DTO em Domain para salva no banco
-        Reserva reserva = convertToDomain(reservaDto);
-        repository.save(reserva);
+        reservation.setStatus(Status.CONFIRMADA);
+        Reserva obj = convertToDomain(reservation);
+        repository.save(obj);
 
-        // Recebo o Domain com o ID incluso, converto em DTO e retorno ao Controller
-        reservaDto = convertToDto(reserva);
-        return reservaDto;
+        reservation = convertToDto(obj);
+        return reservation;
     }
 
+    public ReservaDto findReservationById (Integer id) {
+        Optional<Reserva> reservation = repository.findById(id);
 
-    public ReservaDto findById (Integer id) {
-        Optional<Reserva> reserva = repository.findById(id);
-
-        if (reserva.isEmpty()) {
-            throw new ObjectNotFoundException("Reservation not found, confirm the id.");
+        if (reservation.isEmpty()) {
+            throw new ObjectNotFoundException("Reserva não encontrada, confirme o id.");
         }
 
-        ReservaDto reservaDto = convertToDto(reserva.get());
-        return reservaDto;
+        ReservaDto reservationFound = convertToDto(reservation.get());
+        return reservationFound;
     }
 
-    public List<ReservaDto> findAll() {
-        List<Reserva> reservas = repository.findAll();
+    public List<ReservaDto> findAllReservations() {
+        List<Reserva> reservations = repository.findAll();
         List<ReservaDto> dtos = new ArrayList<>();
 
-        for (Reserva reserva : reservas) {
-            ReservaDto dto = convertToDto(reserva);
+        for (Reserva reservation : reservations) {
+            ReservaDto dto = convertToDto(reservation);
             dtos.add(dto);
         }
 
         return dtos;
     }
 
-    public ReservaDto updateReservationData(ReservaDto reservaDto, Integer id) {
-        Reserva reserva = convertToDomain(findById(id));
+    public ReservaDto updateReservationData(ReservaDto reservation, Integer id) {
+        validateReservationDates(reservation.getDataInicio(), reservation.getDataFim());
+        Reserva obj = convertToDomain(findReservationById(id));
 
-        reserva.setNomeHospede(reservaDto.getNomeHospede());
-        reserva.setDataInicio(reservaDto.getDataInicio());
-        reserva.setDataFim(reservaDto.getDataFim());
-        reserva.setQuantidadePessoas(reservaDto.getQuantidadePessoas());
-        reserva.setStatus(reservaDto.getStatus());
-        repository.save(reserva);
+        obj.setNomeHospede(reservation.getNomeHospede());
+        obj.setDataInicio(reservation.getDataInicio());
+        obj.setDataFim(reservation.getDataFim());
+        obj.setQuantidadePessoas(reservation.getQuantidadePessoas());
+        obj.setStatus(reservation.getStatus());
+        repository.save(obj);
 
-        ReservaDto reservaAtualizada = convertToDto(reserva);
-        reservaAtualizada.setId(reserva.getId());
+        ReservaDto newReservation = convertToDto(obj);
+        newReservation.setId(reservation.getId());
 
-        return reservaAtualizada;
+        return newReservation;
     }
 
-    public ReservaDto cancel(Integer id) {
-        Reserva reserva = convertToDomain(findById(id));
+    public ReservaDto cancelReservation(Integer id) {
+        Reserva reservation = convertToDomain(findReservationById(id));
 
-        reserva.setStatus(Status.CANCELADA);
-        repository.save(reserva);
+        reservation.setStatus(Status.CANCELADA);
+        repository.save(reservation);
 
-        ReservaDto reservaAtualizada = convertToDto(reserva);
-        reservaAtualizada.setId(reserva.getId());
+        ReservaDto reservationCanceled = convertToDto(reservation);
+        reservationCanceled.setId(reservation.getId());
 
-        return reservaAtualizada;
+        return reservationCanceled;
     }
 
     private ReservaDto convertToDto (Reserva obj) {
@@ -93,14 +93,20 @@ public class ReservaService {
         );
     }
 
-    private Reserva convertToDomain (ReservaDto objDto) {
+    private Reserva convertToDomain (ReservaDto dto) {
         return new Reserva(
-                objDto.getId(),
-                objDto.getNomeHospede(),
-                objDto.getDataInicio(),
-                objDto.getDataFim(),
-                objDto.getQuantidadePessoas(),
-                objDto.getStatus()
+                dto.getId(),
+                dto.getNomeHospede(),
+                dto.getDataInicio(),
+                dto.getDataFim(),
+                dto.getQuantidadePessoas(),
+                dto.getStatus()
         );
+    }
+
+    public void validateReservationDates(LocalDate startDate, LocalDate endDate) {
+        if (endDate.isBefore(startDate)) {
+            throw new IllegalArgumentException("A data final da reserva deve ser maior que a data de início.");
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.example.challengeibm.controller;
 import com.example.challengeibm.domain.Reserva;
 import com.example.challengeibm.dto.ReservaDto;
 import com.example.challengeibm.service.ReservaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,33 +21,33 @@ public class ReservaController {
     private ReservaService service;
 
     @PostMapping
-    public ResponseEntity<ReservaDto> insert (@RequestBody ReservaDto reserva) {
-        ReservaDto obj = service.insert(reserva);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
-        return ResponseEntity.created(uri).body(obj);
+    public ResponseEntity<ReservaDto> createReservation(@RequestBody @Valid ReservaDto data) {
+        ReservaDto reservation = service.createReservation(data);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(reservation.getId()).toUri();
+        return ResponseEntity.created(uri).body(reservation);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReservaDto> findById (@PathVariable Integer id) {
-        ReservaDto reservaDto = service.findById(id);
-        return ResponseEntity.ok().body(reservaDto);
+    public ResponseEntity<ReservaDto> findReservationById(@PathVariable Integer id) {
+        ReservaDto reservation = service.findReservationById(id);
+        return ResponseEntity.ok().body(reservation);
     }
 
     @GetMapping
-    public ResponseEntity<List<ReservaDto>> findAll () {
-        List<ReservaDto> reservas = service.findAll();
-        return ResponseEntity.ok().body(reservas);
+    public ResponseEntity<List<ReservaDto>> findAllReservations() {
+        List<ReservaDto> reservations = service.findAllReservations();
+        return ResponseEntity.ok().body(reservations);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReservaDto> update (@RequestBody ReservaDto dto, @PathVariable Integer id) {
-        ReservaDto reserva = service.updateReservationData(dto, id);
-        return ResponseEntity.ok().body(reserva);
+    public ResponseEntity<ReservaDto> updateReservation(@RequestBody ReservaDto data, @PathVariable Integer id) {
+        ReservaDto reservation = service.updateReservationData(data, id);
+        return ResponseEntity.ok().body(reservation);
     }
 
     @DeleteMapping("/{id}/cancelar")
-    public ResponseEntity<ReservaDto> cancel (@PathVariable Integer id) {
-        ReservaDto reserva = service.cancel(id);
-        return ResponseEntity.ok().body(reserva);
+    public ResponseEntity<ReservaDto> cancelReservation(@PathVariable Integer id) {
+        ReservaDto reservation = service.cancelReservation(id);
+        return ResponseEntity.ok().body(reservation);
     }
 }

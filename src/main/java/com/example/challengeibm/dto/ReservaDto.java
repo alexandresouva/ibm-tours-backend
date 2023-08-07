@@ -1,33 +1,35 @@
 package com.example.challengeibm.dto;
 
 import com.example.challengeibm.enums.Status;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 public class ReservaDto {
-
-
-//    CONFIRMAR
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
+
+    @NotBlank
     private String nomeHospede;
 
-
+    @NotNull
+    @Future
     private LocalDate dataInicio;
 
-
+    @NotNull
+    @Future
     private LocalDate dataFim;
+
+    @NotNull
+    @Min(value = 1)
     private Integer quantidadePessoas;
 
-
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
-    // Constructos
+    //    Constructors
 
     public ReservaDto() {
     }
@@ -41,7 +43,7 @@ public class ReservaDto {
         this.status = status;
     }
 
-    // Getters e Setters
+    //    Getters | Setters
 
     public Integer getId() {
         return id;

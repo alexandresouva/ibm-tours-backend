@@ -8,6 +8,8 @@ import com.example.challengeibm.service.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,25 +30,32 @@ public class ReservaService {
         return reservaDto;
     }
 
-    public Reserva findById (Integer id) {
-        Optional<Reserva> obj = repository.findById(id);
-        return obj.orElseThrow(() -> new ObjectNotFoundException("Reservation not found, confirm the id."));
+
+    public ReservaDto findById (Integer id) {
+        Optional<Reserva> reserva = repository.findById(id);
+
+        if (reserva.isEmpty()) {
+            throw new ObjectNotFoundException("Reservation not found, confirm the id.");
+        }
+
+        ReservaDto reservaDto = convertToDto(reserva.get());
+        return reservaDto;
     }
 
+    public List<ReservaDto> findAll() {
+        List<Reserva> reservas = repository.findAll();
+        List<ReservaDto> dtos = new ArrayList<>();
 
-    private ReservaDto convertToDto (Reserva objDto) {
+        for (Reserva reserva : reservas) {
+            ReservaDto dto = convertToDto(reserva);
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
+    private ReservaDto convertToDto (Reserva obj) {
         return new ReservaDto(
-                objDto.getId(),
-                objDto.getNomeHospede(),
-                objDto.getDataInicio(),
-                objDto.getDataFim(),
-                objDto.getQuantidadePessoas(),
-                objDto.getStatus()
-        );
-    }
-
-    private Reserva convertToDomain (ReservaDto obj) {
-        return new Reserva(
                 obj.getId(),
                 obj.getNomeHospede(),
                 obj.getDataInicio(),
@@ -56,6 +65,15 @@ public class ReservaService {
         );
     }
 
-
+    private Reserva convertToDomain (ReservaDto objDto) {
+        return new Reserva(
+                objDto.getId(),
+                objDto.getNomeHospede(),
+                objDto.getDataInicio(),
+                objDto.getDataFim(),
+                objDto.getQuantidadePessoas(),
+                objDto.getStatus()
+        );
+    }
 
 }

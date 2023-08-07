@@ -70,6 +70,18 @@ public class ReservaService {
         return reservaAtualizada;
     }
 
+    public ReservaDto cancel(Integer id) {
+        Reserva reserva = convertToDomain(findById(id));
+
+        reserva.setStatus(Status.CANCELADA);
+        repository.save(reserva);
+
+        ReservaDto reservaAtualizada = convertToDto(reserva);
+        reservaAtualizada.setId(reserva.getId());
+
+        return reservaAtualizada;
+    }
+
     private ReservaDto convertToDto (Reserva obj) {
         return new ReservaDto(
                 obj.getId(),

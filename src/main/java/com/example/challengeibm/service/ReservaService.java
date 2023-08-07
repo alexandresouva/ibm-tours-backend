@@ -54,6 +54,22 @@ public class ReservaService {
         return dtos;
     }
 
+    public ReservaDto updateReservationData(ReservaDto reservaDto, Integer id) {
+        Reserva reserva = convertToDomain(findById(id));
+
+        reserva.setNomeHospede(reservaDto.getNomeHospede());
+        reserva.setDataInicio(reservaDto.getDataInicio());
+        reserva.setDataFim(reservaDto.getDataFim());
+        reserva.setQuantidadePessoas(reservaDto.getQuantidadePessoas());
+        reserva.setStatus(reservaDto.getStatus());
+        repository.save(reserva);
+
+        ReservaDto reservaAtualizada = convertToDto(reserva);
+        reservaAtualizada.setId(reserva.getId());
+
+        return reservaAtualizada;
+    }
+
     private ReservaDto convertToDto (Reserva obj) {
         return new ReservaDto(
                 obj.getId(),
@@ -75,5 +91,4 @@ public class ReservaService {
                 objDto.getStatus()
         );
     }
-
 }

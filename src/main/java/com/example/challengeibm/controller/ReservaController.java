@@ -38,4 +38,9 @@ public class ReservaController {
         return ResponseEntity.ok().body(reservas);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ReservaDto> update (@RequestBody ReservaDto dto, @PathVariable Integer id) {
+        ReservaDto reserva = service.updateReservationData(dto, id);
+        return ResponseEntity.ok().body(reserva);
+    }
 }

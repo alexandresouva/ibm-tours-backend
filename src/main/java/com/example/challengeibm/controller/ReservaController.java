@@ -13,6 +13,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/reservas")
 public class ReservaController {
@@ -21,8 +22,8 @@ public class ReservaController {
     private ReservaService service;
 
     @PostMapping
-    public ResponseEntity<ReservaDto> createReservation(@RequestBody @Valid ReservaDto data) {
-        ReservaDto reservation = service.createReservation(data);
+    public ResponseEntity<ReservaDto> createReservation(@RequestBody @Valid ReservaDto dto) {
+        ReservaDto reservation = service.createReservation(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(reservation.getId()).toUri();
         return ResponseEntity.created(uri).body(reservation);
     }
@@ -40,8 +41,8 @@ public class ReservaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReservaDto> updateReservation(@RequestBody ReservaDto data, @PathVariable Integer id) {
-        ReservaDto reservation = service.updateReservationData(data, id);
+    public ResponseEntity<ReservaDto> updateReservation(@RequestBody ReservaDto dto, @PathVariable Integer id) {
+        ReservaDto reservation = service.updateReservationData(dto, id);
         return ResponseEntity.ok().body(reservation);
     }
 

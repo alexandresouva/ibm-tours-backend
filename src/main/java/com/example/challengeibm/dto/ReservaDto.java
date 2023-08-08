@@ -1,5 +1,6 @@
 package com.example.challengeibm.dto;
 
+import com.example.challengeibm.domain.Reserva;
 import com.example.challengeibm.enums.Status;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,11 +16,11 @@ public class ReservaDto {
     private String nomeHospede;
 
     @NotNull
-    @Future
+    @FutureOrPresent
     private LocalDate dataInicio;
 
     @NotNull
-    @Future
+    @FutureOrPresent
     private LocalDate dataFim;
 
     @NotNull
@@ -41,6 +42,15 @@ public class ReservaDto {
         this.dataFim = dataFim;
         this.quantidadePessoas = quantidadePessoas;
         this.status = status;
+    }
+
+    public ReservaDto(Reserva obj) {
+        id = obj.getId();
+        nomeHospede = obj.getNomeHospede();
+        dataInicio = obj.getDataInicio();
+        dataFim = obj.getDataFim();
+        quantidadePessoas = obj.getQuantidadePessoas();
+        status = obj.getStatus();
     }
 
     //    Getters | Setters

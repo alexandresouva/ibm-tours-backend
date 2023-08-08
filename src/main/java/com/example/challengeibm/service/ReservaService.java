@@ -19,15 +19,15 @@ public class ReservaService {
     @Autowired
     private ReservaRepository repository;
 
-    public ReservaDto createReservation (ReservaDto reservation) {
-        validateReservationDates(reservation.getDataInicio(), reservation.getDataFim());
+    public ReservaDto createReservation (ReservaDto reservationDto) {
+        validateReservationDates(reservationDto.getDataInicio(), reservationDto.getDataFim());
 
-        reservation.setStatus(Status.CONFIRMADA);
-        Reserva obj = convertToDomain(reservation);
+        reservationDto.setStatus(Status.CONFIRMADA);
+        Reserva obj = convertToDomain(reservationDto);
         repository.save(obj);
 
-        reservation = convertToDto(obj);
-        return reservation;
+        reservationDto = convertToDto(obj);
+        return reservationDto;
     }
 
     public ReservaDto findReservationById (Integer id) {
@@ -65,7 +65,7 @@ public class ReservaService {
         repository.save(obj);
 
         ReservaDto newReservation = convertToDto(obj);
-        newReservation.setId(reservation.getId());
+        newReservation.setId(obj.getId());
 
         return newReservation;
     }
@@ -93,7 +93,7 @@ public class ReservaService {
         );
     }
 
-    private Reserva convertToDomain (ReservaDto dto) {
+    public Reserva convertToDomain (ReservaDto dto) {
         return new Reserva(
                 dto.getId(),
                 dto.getNomeHospede(),
